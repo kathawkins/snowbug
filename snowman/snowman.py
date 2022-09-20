@@ -25,7 +25,12 @@ def snowman(snowman_word):
         if user_letter in snowman_letters_guessed:
             print(f"Correct! {user_letter} is in the word!")
             snowman_letters_guessed[user_letter] = True
-        else:
+
+        if len(wrong_letters) == SNOWMAN_MAX_WRONG_GUESSES:
+            print(f"Sorry, you lose! The word was {snowman}")
+            return
+
+        elif user_letter not in snowman_letters_guessed:
             print(f"Sorry! {user_letter} isn't in the word!")
             add_wrong_letter(wrong_letters, user_letter)
 
@@ -37,9 +42,7 @@ def snowman(snowman_word):
         print_wrong_letters(wrong_letters)
         print_guesses_remaining(wrong_letters)
 
-        if len(wrong_letters) == SNOWMAN_MAX_WRONG_GUESSES:
-            print(f"Sorry, you lose! The word was {snowman}")
-            return
+
 
 
 def build_snowman_graphic(num_wrong_guesses):
@@ -47,9 +50,10 @@ def build_snowman_graphic(num_wrong_guesses):
     snowman depending on the number of 
     wrong guesses and converts it to a single string
     """
-
+    if num_wrong_guesses == 0:
+        return ""
     # use slicing to get the snowman lines we need
-    lines = SNOWMAN_IMAGE[:num_wrong_guesses - 1]
+    lines = SNOWMAN_IMAGE[7-num_wrong_guesses:7]
     return "\n".join(lines)
 
 
@@ -76,7 +80,8 @@ def get_letter_from_user(word_dict, wrong_letters):
 def build_word_dict(word):
     word_dict = {}
     for letter in word:
-        word_dict[letter] = False
+        if letter.isalpha():
+            word_dict[letter] = False
 
     return word_dict
 
@@ -92,7 +97,7 @@ def is_word_guessed(word_dict):
 def build_game_board(word, word_dict):
     output_letters = []
     for elem in word:
-        if elem in word_dict:
+        if not elem.isalpha(): #in word_dict
             output_letters += elem
         elif word_dict[elem]:
             output_letters += elem
@@ -104,13 +109,14 @@ def build_game_board(word, word_dict):
 
 def add_wrong_letter(wrong_letters, letter):
     wrong_letters.append(letter)
+    wrong_letters.sort()
 
 
 # There are no issues in this function
 def print_wrong_letters(wrong_letters):
     if not wrong_letters:
         return
-
+    # sorted_wrong_letters=sorted(wrong_letters)
     print(f"Wrong letters: {' '.join(wrong_letters)}")
 
 
